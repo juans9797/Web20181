@@ -1,0 +1,47 @@
+version: '2'
+services:
+
+  nginx1:
+    build: ./nginx1/.
+    networks:
+      app_net:
+        ipv4_address: 17.18.18.2
+
+
+  nginx2:
+    build: ./nginx2/.
+    networks:
+      app_net:
+        ipv4_address: 17.18.18.3
+
+  database:
+    build: ./mysql/.
+    environment:
+      MYSQL_DATABASE: "test"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "test"
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    networks:
+      app_net:
+        ipv4_address: 17.18.18.4
+
+  haproxy:
+    build: ./haproxy/.
+    ports:
+       - '8080:8080'
+    networks:
+      app_net:
+        ipv4_address: 17.18.18.5
+
+
+networks:
+  app_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 17.18.18.0/16
+        gateway: 17.18.18.1
